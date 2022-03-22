@@ -1,0 +1,11 @@
+extern void ControllerLED_InitPorts(void);
+extern void ControllerBtn_InitPorts(void);
+extern void LEDs_InitPorts(void);
+extern void LCD_Init(void);
+extern void KEY_InitPorts(void);
+extern void TMR7_Init(void);
+extern void TMR12_Capture(void);
+extern void TMR12_Count(void);
+extern void ADC_Init(void);
+extern void LIN_Init(void);
+extern void TMR3_Init(void);

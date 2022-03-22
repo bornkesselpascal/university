@@ -1,0 +1,115 @@
+<html>
+<body>
+<pre>
+<h1>µVision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: µVision V5.36.0.0
+Copyright (C) 2021 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: Pascal Julian Bornkessel, THI, LIC=----
+ 
+Tool Versions:
+Toolchain:       MDK-Lite  Version: 5.36.0.0
+Toolchain Path:  C:\Keil_v5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.06 update 7 (build 960)
+Assembler:       Armasm.exe V5.06 update 7 (build 960)
+Linker/Locator:  ArmLink.exe V5.06 update 7 (build 960)
+Library Manager: ArmAr.exe V5.06 update 7 (build 960)
+Hex Converter:   FromElf.exe V5.06 update 7 (build 960)
+CPU DLL:         SARMCM3.DLL V5.36.0.0
+Dialog DLL:      DCM.DLL V1.17.3.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.9.0
+Dialog DLL:      TCM.DLL V1.53.0.0
+ 
+<h2>Project:</h2>
+C:\Users\bornk\Entwickler\mct\MCT_Praktikum\MCPraktikum.uvprojx
+Project File Date:  03/22/2022
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.06 update 7 (build 960)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
+Build target 'Simulation - Flash'
+compiling led_controller.c...
+compiling led_board.c...
+compiling display.c...
+compiling tastatur.c...
+compiling main.c...
+main.c(158): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+  		LCD_WriteString(10, 30, 0xFFFF, 0x0000, display_OutputString);
+main.c(211): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+  				LCD_WriteString(10, 80, 0xFFFF, 0x0000, display_OutputString);
+main.c(226): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+  				LCD_WriteString(10, 100, 0xFFFF, 0x0000, display_OutputString);
+main.c(241): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+  			LCD_WriteString(10, 150, 0xFFFF, 0x0000, display_OutputString);
+main.c(272): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "uint8_t *"
+  			LCD_WriteString(10, 170, 0xFFFF, 0x0000, display_OutputString);
+main.c(449): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "const uint8_t *"
+  		lin_Send.buffer[2] = LIN_checksum(lin_Send.buffer, 2, lin_rec_data);
+main.c(479): warning:  #167-D: argument of type "volatile uint8_t *" is incompatible with parameter of type "const uint8_t *"
+  		lin_Send.buffer[2] = LIN_checksum(lin_Send.buffer, 2, lin_rec_data);
+main.c(470): warning:  #177-D: variable "ks_local"  was declared but never referenced
+  		uint16_t ks_local = key_state;
+main.c: 8 warnings, 0 errors
+compiling inits.c...
+inits.c(186): warning:  #61-D: integer operation result is out of range
+  	GPIOC->AFR[0]|= (1<<31);			   	// PC7 zu RXD (AF8)
+inits.c(186): warning:  #68-D: integer conversion resulted in a change of sign
+  	GPIOC->AFR[0]|= (1<<31);			   	// PC7 zu RXD (AF8)
+inits.c: 2 warnings, 0 errors
+compiling _mcpr_stm32f407_all.c...
+compiling retarget_io.c...
+assembling startup_stm32f407xx.s...
+compiling system_stm32f4xx.c...
+linking...
+Program Size: Code=8720 RO-data=8640 RW-data=128 ZI-data=78504  
+".\Objects\MCPraktikum.axf" - 0 Error(s), 10 Warning(s).
+
+<h2>Software Packages used:</h2>
+
+Package Vendor: ARM
+                http://www.keil.com/pack/ARM.CMSIS.5.8.0.pack
+                ARM.CMSIS.5.8.0
+                CMSIS (Common Microcontroller Software Interface Standard)
+   * Component: CORE Version: 5.5.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.ARM_Compiler.1.6.3.pack
+                Keil.ARM_Compiler.1.6.3
+                Keil ARM Compiler extensions for ARM Compiler 5 and ARM Compiler 6
+   * Component: STDERR Variant: Breakpoint Version: 1.2.0
+   * Component: STDIN Variant: Breakpoint Version: 1.2.0
+   * Component: STDOUT Variant: Breakpoint Version: 1.2.0
+
+Package Vendor: Keil
+                http://www.keil.com/pack/Keil.STM32F4xx_DFP.2.16.0.pack
+                Keil.STM32F4xx_DFP.2.16.0
+                STMicroelectronics STM32F4 Series Device Support, Drivers and Examples
+   * Component: Startup Version: 2.6.3
+
+<h2>Collection of Component include folders:</h2>
+  .\RTE\_Simulation_-_Flash
+  C:\Users\bornk\AppData\Local\Arm\Packs\ARM\CMSIS\5.8.0\CMSIS\Core\Include
+  C:\Users\bornk\AppData\Local\Arm\Packs\Keil\STM32F4xx_DFP\2.16.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+
+   * Component: ARM::CMSIS:CORE:5.5.0
+
+   * Component: Keil.ARM Compiler::Compiler:I/O:STDERR:Breakpoint:1.2.0
+      Source file:   Source\retarget_io.c
+
+   * Component: Keil.ARM Compiler::Compiler:I/O:STDIN:Breakpoint:1.2.0
+      Source file:   Source\retarget_io.c
+
+   * Component: Keil.ARM Compiler::Compiler:I/O:STDOUT:Breakpoint:1.2.0
+      Source file:   Source\retarget_io.c
+
+   * Component: Keil::Device:Startup:2.6.3
+      Source file:   MDK\Device\Source\ARM\STM32F4xx_OTP.s
+      Include file:  Drivers\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
+      Source file:   MDK\Device\Source\ARM\STM32F40xxx_41xxx_OPT.s
+      Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\arm\startup_stm32f407xx.s
+      Source file:   Drivers\CMSIS\Device\ST\STM32F4xx\Source\Templates\system_stm32f4xx.c
+Build Time Elapsed:  00:00:04
+</pre>
+</body>
+</html>
