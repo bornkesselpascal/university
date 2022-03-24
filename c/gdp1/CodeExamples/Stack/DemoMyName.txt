@@ -1,0 +1,174 @@
+Demo der beiden Beispiele myname-V1.c und myname-V2.c im GDB
+============================================================
+
+Ausführung in virtueller Maschine (32Bit System)
+
+cd ~/GdPI/CodeExamples/Stack
+make clean; make
+
+# Teminal 77x27
+
+#------------------------------------
+# Ausführung von bin/myname-V1 im GDB
+#------------------------------------
+
+gdbtui -q bin/myname-V1
+
+break main
+run
+
+winheight src 12
+
+source gdb.stackdump
+set_bfp
+
+# Ausführen bis (vor) printf, 3 C-Statements 
+next
+<Enter>
+<Enter>
+
+# Stack-Frames ausgeben
+
+stack_all
+
+-----------
+0xbffff8d0: 0xffffffff
+0xbffff8d4: 0x11223344
+0xbffff8d8: 0x08048510
+0xbffff8dc: 0x55667788
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 0
+-----------
+
+(gdb) p &x
+$1 = (int *) 0xbffff8d4
+(gdb) p &y
+$2 = (int *) 0xbffff8dc
+(gdb) p &name
+$3 = (char **) 0xbffff8d8
+
+Wo zeigt Zeiger name hin?
+
+(gdb) p /x name
+$4 = 0x8048510
+
+(gdb) p main
+$6 = {int ()} 0x80483e4 <main>
+
+=> Das ist da, wo der Code von main() liegt:
+=> Code-Segment
+
+# Ausgabe der Zeichenkette
+(gdb) p name
+$8 = 0x8048510 "Philomena"
+(gdb) x /10xb name
+0x8048510:      0x50    0x68    0x69    0x6c    0x6f    0x6d    0x65    0x6e
+0x8048518:      0x61    0x00
+
+   P  h  i  l  o  m  e  n  a  \0
+0x 50 68 69 6c 6f 6d 65 6e 61 0
+
+# BEGIN ASIDE
+Die Zeichenkette kann im Programm nicht geändert werden, da die Daten
+im Code-Segment nicht geändert werden können. Das Code-Segment hat Schreibschutz.
+
+Bei Ausführung: 
+Program received signal SIGSEGV, Segmentation fault.
+0x0804842c in main () at myname-V1.c:10
+
+ABER während der Ausführung im Debugger ist der Schreibschutz auf
+das Code-Segment aufgehoben.
+Man darf den Code durch Anweisungen des Debuggers ändern!
+
+(gdb) p name[1] = 0x65
+$4 = 101 'e'
+(gdb) p name
+$5 = "Peilomena"
+
+#END ASIDE
+
+#------------------------------------
+# Ausführung von bin/myname-V2 im GDB
+#------------------------------------
+
+gdbtui -q bin/myname-V2
+
+break main
+run
+
+winheight src 12
+
+source gdb.stackdump
+set_bfp
+
+# Ausführen bis (vor) printf, 3 C-Statements 
+next
+<Enter>
+<Enter>
+
+# Stack-Frames ausgeben
+
+stack_all
+
+-----------
+0xbffff8c0: 0x002d83e4
+0xbffff8c4: 0x00000005
+0xbffff8c8: 0x11223344
+0xbffff8cc: 0x55667788
+0xbffff8d0: 0x6850ffff
+0xbffff8d4: 0x6d6f6c69
+0xbffff8d8: 0x00616e65
+0xbffff8dc: 0x7d109300
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 0
+-----------
+
+(gdb) p &x
+$1 = (int *) 0xbffff8c8
+(gdb) p &y
+$2 = (int *) 0xbffff8cc
+(gdb) p &name
+$3 = (char (*)[10]) 0xbffff8d2
+
+Nochmal das Stack-Frame ausgeben
+Da sieht man den String :-)
+
+(gdb) stack_all
+-----------
+0xbffff8c0: 0x002d83e4
+0xbffff8c4: 0x00000005
+0xbffff8c8: 0x11223344
+0xbffff8cc: 0x55667788
+0xbffff8d0: 0x6850ffff
+0xbffff8d4: 0x6d6f6c69
+0xbffff8d8: 0x00616e65
+0xbffff8dc: 0x7d109300
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 0
+-----------
+
+Erklärung:
+   P  h  i  l  o  m  e  n  a  \0
+0x 50 68 69 6c 6f 6d 65 6e 61 0
+
+(gdb) x /10xb name
+0xbffff8d2:     0x50    0x68    0x69    0x6c    0x6f    0x6d    0x65    0x6e
+0xbffff8da:     0x61    0x00
+
+Hier liegt also keine Adresse auf eine Zeichenkette
+im Stack (wie bei myname-V1), sondern die Zeichenkette selbst!
+
+# ASIDE
+Die Zeichenkette kann auch im Programm geändert werden.
+Im Debugger während der Ausführung geht das ohnehin (siehe oben)
+
+(gdb) p name[1] = 0x65
+$4 = 101 'e'
+(gdb) p name
+$5 = "Peilomena"
+
+# END ASIDE
+

@@ -1,0 +1,3 @@
+# set intel flavor for debugging
+set disassembly-flavor intel
+

@@ -1,0 +1,53 @@
+1) make clean; make
+
+2a) Show source of main() in demo1.c
+2b) Run program once such that demo1.dot is created
+
+  bin/demo1
+
+3) Start the dot viewer
+
+  dot -Txlib demo1.dot &
+
+  hint: use the mouse scroll button to adjust the size of the image
+
+4) Start the debugger in TUI-Mode
+
+  gdb -tui -q bin/demo1
+
+  or
+
+  gdbtui -q bin/demo1
+
+5) In the debugger source the debugger script gdb.demo1
+
+(gdb) source gdb.demo1
+
+It sets a breakpoint on
+  list_print_data_from_front
+and defines the functions
+  show_list_cur
+  show_list_all
+
+(gdb) run
+
+Demo:
+
+Single-Step (n) through code of function list_print_data_from_front
+and observe its way through the list structure.
+
+(gdb) where
+(gdb) p node
+(gdb) p node->data
+
+(gdb) n
+
+On demand refresh the dot display by running either
+  show_list_cur     (display partial list starting with pointer node)
+or
+  show_list_all     (display entire list starting with pointer anchor)
+
+Also use command
+  where
+to show the call stack
+

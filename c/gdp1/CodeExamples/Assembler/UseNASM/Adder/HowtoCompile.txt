@@ -1,0 +1,20 @@
+#-------------------------
+# Install package nasm as user root
+
+# Already done for WS18 VM
+# sudo aptitude install nasm
+
+#----------------
+# Compile and link
+
+mkdir bin
+nasm -g -f elf32 -F dwarf -d ELF_TYPE adder.asm 
+gcc -o bin/adder adder.o 
+
+#----------------
+# For convenience:
+# Use a Makefile!
+
+make clean
+make
+

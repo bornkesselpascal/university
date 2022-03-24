@@ -1,0 +1,110 @@
+Zeige Manipulation des terminierenden '\0' in einer Zeichenkette
+================================================================
+
+# Plattform: 32bit Linux Mint 13 in VM
+
+# Teminal 79x30
+
+gdbtui -q bin/nullByteTerminatedStrings-V2
+
+(gdb) break main
+(gdb) run
+
+#----------------------------------------------------
+
+Bis in Zeile 14 per 'next' ausfuehren lassen
+(gdb) n
+...
+
+Zeichenkette s2: Hermione Granger
+14	  film_figur[5] = '\0';
+
+Jetzt einen Speicher-Dump ab Adresse von film_figur machen:
+
+Als Strings
+
+(gdb) x /6s &film_figur
+0xbffff883:      "Harry Po"
+0xbffff88c:      ""
+0xbffff88d:      ""
+0xbffff88e:      ""
+0xbffff88f:      ""
+0xbffff890:      "Ron Weasley"
+
+In HEX:
+(gdb) x /16xb &film_figur
+0xbffff883:     0x48    0x61    0x72    0x72    0x79    0x20    0x50    0x6f
+0xbffff88b:     0x00    0x00    0x00    0x00    0x00    0x52    0x6f    0x6e
+
+In einem zweiten Fenster per 'man ascii' den ASCII-Code anzeigen.
+
+#----------------------------------------------------
+
+Nun bis in Zeile 19 per 'next' ausfuehren lassen
+
+(gdb) next
+...
+19	  film_figur[5]  = ' ';
+
+Wieder einen Speicher-Dump ab Adresse von film_figur machen:
+
+(gdb) x /3s &film_figur 
+0xbffff883:      "Harry"
+0xbffff889:      "Po"
+0xbffff88c:      ""
+
+(gdb) x /16xb &film_figur
+0xbffff883:     0x48    0x61    0x72    0x72    0x79    0x00    0x50    0x6f
+0xbffff88b:     0x00    0x00    0x00    0x00    0x00    0x52    0x6f    0x6e
+
+Durch die Löschung des Zeichens '\0' in Zeile 14 wurde der
+String film_figur in die zwei Teile "Harry" und "Po" geteilt.
+
+#----------------------------------------------------
+
+Nun bis in Zeile 31 per 'per until' ausfuehren lassen
+
+(gdb) until 31
+31	  film_figur[12] = '+';
+
+Wieder einen Speicher-Dump ab Adresse von film_figur machen:
+
+(gdb) x /3s &film_figur 
+0xbffff883:      "Harry Potter"
+0xbffff890:      "Ron Weasley"
+0xbffff89c:      ""
+
+(gdb) x /16xb &film_figur
+0xbffff883:     0x48    0x61    0x72    0x72    0x79    0x20    0x50    0x6f
+0xbffff88b:     0x74    0x74    0x65    0x72    0x00    0x52    0x6f    0x6e
+
+Der String film_figur wurde verlängert zu "Harry Potter" und ist nur
+noch durch ein '\0' vom nächsten String "Ron Weasley" getrennt.
+
+Hinweis: Die oben gezeigte Speicherbelegung hängt ab vom Prozessortyp
+und von vewendeten Compiler!
+
+#----------------------------------------------------
+
+Nun die aktuelle Code-Zeile per 'next' ausfuehren.
+Dadurch wird die Grenze zwischen den beiden Strings entfernt.
+
+
+(gdb) next
+32	  printf("Name der Filmfigur: %s\n", film_figur);
+
+Wieder einen Speicher-Dump ab Adresse von film_figur machen:
+
+(gdb)  x /3s &film_figur 
+0xbffff883:      "Harry Potter+Ron Weasley"
+0xbffff89c:      ""
+0xbffff89d:      "~\343\025p\205\004\b"
+
+(gdb) x /16xb &film_figur
+0xbffff883:     0x48    0x61    0x72    0x72    0x79    0x20    0x50    0x6f
+0xbffff88b:     0x74    0x74    0x65    0x72    0x2b    0x52    0x6f    0x6e
+
+Der ASCII-Code des Zeichens '+' ist 0x2b
+
+Beenden
+

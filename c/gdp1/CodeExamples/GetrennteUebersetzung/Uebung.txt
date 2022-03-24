@@ -1,0 +1,20 @@
+Der Code in euklid.c und readInteger.c kann in mehrfacher Hinsicht
+verbessert werden.
+
+Übung 1)
+   Ersetzen Sie die CPP-Konstanten OK und ERROR durch
+   EXIT_SUCCESS und EXIT_FAILURE aus stdlib.h
+
+   Wieso ist das besser?
+
+Andere, augenscheinliche 'Verbesserungen' ändern jedoch die Semantik
+des Programms
+
+Übung 2)
+   Ziehen Sie die Anweisung
+    while(getchar() != '\n');
+   aus der bedingten Anweisung heraus.
+
+   Inwiefern ändert sich nun die Semantik des Programms?
+
+

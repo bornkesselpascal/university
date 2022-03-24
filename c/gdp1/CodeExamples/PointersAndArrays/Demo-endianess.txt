@@ -1,0 +1,98 @@
+# Terminal mit 70x35
+
+make clean
+make
+
+gdbtui -q -x gdb.endianess bin/endianess
+
+# Im gdb:
+
+   ┌──endianess.c────────────────────────────────────────────────────┐
+   │22      }                                                        │
+   │23                                                               │
+   │24      int main(void){                                          │
+B+>│25        unsigned short int as[2][2] = {                        │
+   │26          {0x1122, 0x3344},                                    │
+   │27          {0x5566, 0x7788},                                    │
+   │28        };                                                     │
+   │29                                                               │
+   └─────────────────────────────────────────────────────────────────┘
+
+
+# Das erste C-Statement ausführen lassen, damit Array as
+# initialisiert wird.
+
+(gdb) next
+
+   ┌──endianess.c────────────────────────────────────────────────────┐
+   │23                                                               │
+   │24      int main(void){                                          │
+B+ │25        unsigned short int as[2][2] = {                        │
+   │26          {0x1122, 0x3344},                                    │
+   │27          {0x5566, 0x7788},                                    │
+   │28        };                                                     │
+   │29                                                               │
+  >│30        printf("sizeof(short)=%d\n", sizeof(short));           │
+
+
+# Nun das Stack-Frame von main in unterschiedlicher
+# Darstellung ausgeben lassen
+
+(gdb) stacks
+
+-----------
+0xbffff1f0: 0x0001
+0xbffff1f2: 0x0000
+0xbffff1f4: 0xf2b4
+0xbffff1f6: 0xbfff
+0xbffff1f8: 0xf2bc
+0xbffff1fa: 0xbfff
+0xbffff1fc: 0x74ad
+0xbffff1fe: 0xb7e3
+0xbffff200: 0x13c4
+0xbffff202: 0xb7fb
+0xbffff204: 0xf000
+0xbffff206: 0xb7ff
+0xbffff208: 0x1122  <---
+0xbffff20a: 0x3344  <---
+0xbffff20c: 0x5566  <---
+0xbffff20e: 0x7788
+
+(gdb) stackb
+...
+0xbffff207: 0xb7
+0xbffff208: 0x22
+0xbffff209: 0x11
+0xbffff20a: 0x44
+0xbffff20b: 0x33
+0xbffff20c: 0x66
+0xbffff20d: 0x55
+0xbffff20e: 0x88
+0xbffff20f: 0x77
+0xbffff210: 0xd0
+...
+
+(gdb) stackw
+
+-----------
+0xbffff1f0: 0x00000001
+0xbffff1f4: 0xbffff2b4
+0xbffff1f8: 0xbffff2bc
+0xbffff1fc: 0xb7e374ad
+0xbffff200: 0xb7fb13c4
+0xbffff204: 0xb7fff000
+0xbffff208: 0x33441122
+0xbffff20c: 0x77885566
+0xbffff210: 0x080485d0
+0xbffff214: 0x00000000
+
+(gdb) stackg
+-----------
+0xbffff1f0: 0xbffff2b400000001
+0xbffff1f8: 0xb7e374adbffff2bc
+0xbffff200: 0xb7fff000b7fb13c4
+0xbffff208: 0x7788556633441122
+0xbffff210: 0x00000000080485d0
+
+(gdb) quit
+

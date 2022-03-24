@@ -1,0 +1,199 @@
+#-----------------------------------------
+# Teminal 77x27: (mit Alt-F8 in Resize-Modus gehen; Return wenn fertig)
+
+$ make clean; make
+
+Erklären:
+
+	-> -mpush-args
+	-> -mpreferred-stack-boundary=4
+
+$ gdbtui -q bin/factorial
+
+#-----------------------------------------
+
+(gdb) source gdb.stackdump
+(gdb) break main
+(gdb) break factorial
+
+(gdb) winheight src 7
+(gdb) run 4
+
+(gdb) set_bfp
+
+#-----------------
+
+Stack ausgeben mittels
+
+(gdb) stack_all32 
+-----------
+0xbffff8a0: 0xffffffff
+0xbffff8a4: 0x00166196
+0xbffff8a8: 0x002d7ff4
+0xbffff8ac: 0x00166225
+0xbffff8b0: 0x0011f280
+0xbffff8b4: 0x00000000
+0xbffff8b8: 0x080484e9
+0xbffff8bc: 0x002d7ff4
+0xbffff8c0: 0x080484e0
+0xbffff8c4: 0x00000000
+0xbffff8c8: 0x00000000 <--- fp 0
+
+(gdb) cont
+Continuing.
+
+Breakpoint 2, factorial (n=4) at factorial.c:8
+
+(gdb) stack_all32
+-----------
+0xbffff880: 0xbffffb0c <--- Stack Alignement auf 2^4
+0xbffff884: 0x00000000
+0xbffff888: 0x0000000a
+0xbffff88c: 0x00164620
+0xbffff890: 0xbffffb0c
+0xbffff894: 0x00131918
+0xbffff898: 0xbffff8c8 <--- fp 0
+0xbffff89c: 0x080484b3
+0xbffff8a0: 0x00000004 <--- Parameter n für Aufruf factorial(4)
+0xbffff8a4: 0x00166196
+0xbffff8a8: 0x002d7ff4
+0xbffff8ac: 0x00166225
+0xbffff8b0: 0x0011f280
+0xbffff8b4: 0x00000000
+0xbffff8b8: 0x080484e9
+0xbffff8bc: 0x00000004
+0xbffff8c0: 0x080484e0
+0xbffff8c4: 0x00000000
+0xbffff8c8: 0x00000000 <--- fp 1
+-----------
+
+Beobachtung: Stack ist unnötig groß!
+Grund: Alignement TOS auf 2^4.
+
+GDB-Session abbrechen
+
+#----------------------
+
+Dann Makefile aendern:
+
+-mpreferred-stack-boundary=2
+
+make clean; make
+
+#-----------------------
+
+Demo nochmals
+-> Stackframes sind kleiner da auf 2^2 aligned statt auf 2^4
+
+(gdb) source gdb.stackdump
+(gdb) break main
+(gdb) break factorial
+
+(gdb) winheight src 7
+(gdb) run 4
+
+(gdb) set_bfp
+
+#-----------------
+
+Stack ausgeben mittels
+
+(gdb) stack_all32 
+-----------
+0xbffff8b8: 0x080484d9
+0xbffff8bc: 0x002d7ff4
+0xbffff8c0: 0x080484d0
+0xbffff8c4: 0x00000000
+0xbffff8c8: 0x00000000 <--- fp 0
+
+(gdb) cont
+Continuing.
+
+Breakpoint 2, factorial (n=4) at factorial.c:8
+
+(gdb) stack_all32
+-----------
+0xbffff8ac: 0x00131918
+0xbffff8b0: 0xbffff8c8 <--- fp 0
+0xbffff8b4: 0x080484ae
+0xbffff8b8: 0x00000004
+0xbffff8bc: 0x002d7ff4
+0xbffff8c0: 0x080484d0
+0xbffff8c4: 0x00000004
+0xbffff8c8: 0x00000000 <--- fp 1
+-----------
+
+
+(gdb) cont
+Continuing.
+
+Breakpoint 2, factorial (n=3) at factorial.c:8
+(gdb) stack_all32 
+-----------
+0xbffff8a0: 0x0000000a
+0xbffff8a4: 0xbffff8b0 <--- fp 0
+0xbffff8a8: 0x08048455
+0xbffff8ac: 0x00000003
+0xbffff8b0: 0xbffff8c8 <--- fp 1
+0xbffff8b4: 0x080484ae
+0xbffff8b8: 0x00000004
+0xbffff8bc: 0x002d7ff4
+0xbffff8c0: 0x080484d0
+0xbffff8c4: 0x00000004
+0xbffff8c8: 0x00000000 <--- fp 2
+-----------
+
+Beobachtung: Stack ist jetzt viel schlanker.
+Grund: Alignement TOS nur noch auf 2^2.
+
+(gdb) cont
+Continuing.
+
+Breakpoint 2, factorial (n=2) at factorial.c:8
+(gdb) stack_all32 
+-----------
+0xbffff894: 0x0016463f
+0xbffff898: 0xbffff8a4 <--- fp 0
+0xbffff89c: 0x08048455
+0xbffff8a0: 0x00000002
+0xbffff8a4: 0xbffff8b0 <--- fp 1
+0xbffff8a8: 0x08048455
+0xbffff8ac: 0x00000003
+0xbffff8b0: 0xbffff8c8 <--- fp 2
+0xbffff8b4: 0x080484ae
+0xbffff8b8: 0x00000004
+0xbffff8bc: 0x002d7ff4
+0xbffff8c0: 0x080484d0
+0xbffff8c4: 0x00000004
+0xbffff8c8: 0x00000000 <--- fp 3
+-----------
+
+Breakpoint 2, factorial (n=1) at factorial.c:8
+(gdb) stack_all32 
+-----------
+0xbffff888: 0x00000002
+0xbffff88c: 0xbffff898 <--- fp 0
+0xbffff890: 0x08048455
+0xbffff894: 0x00000001
+0xbffff898: 0xbffff8a4 <--- fp 1
+0xbffff89c: 0x08048455
+0xbffff8a0: 0x00000002
+0xbffff8a4: 0xbffff8b0 <--- fp 2
+0xbffff8a8: 0x08048455
+0xbffff8ac: 0x00000003
+0xbffff8b0: 0xbffff8c8 <--- fp 3
+0xbffff8b4: 0x080484ae
+0xbffff8b8: 0x00000004
+0xbffff8bc: 0x002d7ff4
+0xbffff8c0: 0x080484d0
+0xbffff8c4: 0x00000004
+0xbffff8c8: 0x00000000 <--- fp 4
+-----------
+
+(gdb) cont
+Continuing.
+factorial(4) = 24
+                 [Inferior 1 (process 15382) exited normally]
+
+GDB-Session abbrechen
+

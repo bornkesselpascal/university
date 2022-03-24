@@ -1,0 +1,5 @@
+break main
+set disassembly-flavor intel
+layout asm
+set print max-symbolic-offset 1
+winheight asm 10

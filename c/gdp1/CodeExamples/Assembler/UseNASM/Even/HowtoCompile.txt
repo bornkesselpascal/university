@@ -1,0 +1,19 @@
+#-------------------------
+# Install package nasm as user root
+
+sudo aptitude install nasm
+
+#----------------
+# Compile and link
+
+mkdir bin
+nasm -g -f elf32 -F dwarf -d ELF_TYPE even.asm 
+gcc -o bin/even even.o 
+
+#----------------
+# For convenience:
+# Use a Makefile!
+
+make clean
+make
+

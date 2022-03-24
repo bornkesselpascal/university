@@ -1,0 +1,10 @@
+break list_print_data_from_front
+
+define show_list_cur
+  p list_dump_as_graph(node,"demo1.dot")
+end
+
+define show_list_all
+  p list_dump_as_graph(main::anchor,"demo1.dot")
+end
+

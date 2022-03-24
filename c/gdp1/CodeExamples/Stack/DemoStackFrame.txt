@@ -1,0 +1,476 @@
+Demo: zeige stack frames in GDB am Beispiel swap-V1
+===================================================
+
+Ausführung in virtueller Maschine (32Bit System)
+- wegen TUI-mode
+
+cd ~/GdPI/CodeExamples/Stack
+make clean; make
+
+# Teminal 79x30 (66x27 reicht auch)
+
+gdbtui -q bin/swap-V1
+
+#----------------------------------
+# Demo 1: C-Source
+#----------------------------------
+
+(gdb) break main
+(gdb) run
+
+# Wir fuehren das Programm im Einzelschritt (step) auf C-Ebene aus, bis
+# wir direkt vor dem Aufruf der Funktion swap sind.
+
+(gdb) s
+...
+
+bis zum Ende
+
+#-------------------------------------
+# Demo 2: Mit C annotierter Assembler
+#-------------------------------------
+
+Wir betrachten das Programm im Assembler-Mode mit
+annotierten C-Statements
+
+Ctrl-x a (TUI-Mode verlassen)
+
+Ctrl-l löscht die Anzeige (clear screen!)
+
+#Hints:
+#set disassembly-flavor intel
+#set print max-symbolic-offset 1
+
+# Show disassembled code in AT&T flavour
+
+(gdb) disass /m main
+Dump of assembler code for function main:
+18	int main() {
+   0x0804842e <+0>:	lea    0x4(%esp),%ecx
+   0x08048432:	and    $0xfffffff0,%esp
+   0x08048435:	pushl  -0x4(%ecx)
+   0x08048438:	push   %ebp
+   0x08048439:	mov    %esp,%ebp
+   0x0804843b:	push   %ecx
+   0x0804843c:	sub    $0x14,%esp
+
+19	    int i1,i2;
+20	
+21	    i1=0x11223344;
+   0x0804843f:	movl   $0x11223344,-0x10(%ebp)
+
+22	    i2=0x55667788;
+   0x08048446:	movl   $0x55667788,-0xc(%ebp)
+
+23	
+24	    swap(i1,i2);
+   0x0804844d:	pushl  -0xc(%ebp)
+   0x08048450:	pushl  -0x10(%ebp)
+   0x08048453:	call   0x8048414 <swap>
+   0x08048458:	add    $0x8,%esp
+   ...
+
+Optional: noch einmal, aber mit Maschinencode 'r'
+
+(gdb) disass /rm main
+18      int main() {
+   0x0804842e <+0>:     8d 4c 24 04     lea    0x4(%esp),%ecx
+...
+19          int i1,i2;
+20      
+21          i1=0x11223344;
+   0x0804843f:  c7 45 f0 44 33 22 11    movl   $0x11223344,-0x10(%ebp)
+
+#
+#-- Erkläre Begriff Endianismus: Big Endian, Little Endian
+#   am Beispiel  i1=0x11223344;
+#             ->
+#                c7 45 f0 44 33 22 11
+
+Zusätzlich: reiner Hex-Dump der main Funktion
+
+(gdb) set print max-symbolic-offset 1
+
+(gdb) x/32xb main
+
+0x804842e <main>:       0x8d    0x4c    0x24    0x04    0x83    0xe4    0xf0    0xff
+0x8048436:      0x71    0xfc    0x55    0x89    0xe5    0x51    0x83    0xec
+(gdb) 
+0x804843e:      0x14    0xc7    0x45    0xf0    0x44    0x33    0x22    0x11
+0x8048446:      0xc7    0x45    0xf4    0x88    0x77    0x66    0x55    0xff
+
+Ctrl-x a (TUI-Mode wieder betreten)
+
+Frage: was bedeutet das 'l' bei movl
+Antwort: im AT&T-Flavor  des x86 Assembler 'long'
+         Im Intel-Flavor des x86 Assembler stattdessen DWORD
+
+Hint:
+set disassembly-flavor intel
+  21        i1=0x11223344;
+   0x0804843f <+17>:    mov    DWORD PTR [ebp-0x10],0x11223344
+
+set disassembly-flavor att
+  21          i1=0x11223344;
+   0x0804843f <+17>:    movl   $0x11223344,-0x10(%ebp)
+
+#--------------------------------------------
+# Demo 3: Schrittweise ausführen, stack dump
+#--------------------------------------------
+
+(gdb) info break
+
+Falls in aktueller Session noch nicht geschehen
+
+(gdb) break main
+
+(gdb) run
+(gdb) set disassembly-flavor intel
+(gdb) layout asm
+
+Hint: zurück mit 'layout src'
+
+Ausgabe des GDB konfigurieren (siehe Manual)
+
+(gdb) set print max-symbolic-offset 1
+(gdb) winheight asm 10
+
+GDB-Skript für Animation des Stacks laden
+
+(gdb) source gdb.stackdump 
+
+Bezugspunkt für die Ausgabe des Stacks setzen: bfp - base frame pointer
+(gdb) set_bfp 
+
+Ausgabe des Stacks vom aktuellen Stackpointer bis zum bfp
+
+(gdb) stack_all32
+
+Hint: Für das Kommando stack_all32 reicht der Präfix 'stack_'
+
+-----------
+0xbffff8d0: 0xffffffff
+0xbffff8d4: 0x00166196
+0xbffff8d8: 0x002d7ff4
+0xbffff8dc: 0x00166225
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 0
+-----------
+
+Zur Erklärung aktuellen Frame-Pointer und Stack-Pointer ausgeben
+(gdb) p $fp
+$1 = (void *) 0xbffff8e8
+
+(gdb) p $sp
+$2 = (void *) 0xbffff8d0
+
+Noch sind die Werte von i1, i2 nicht hinterlegt.
+
+Wir fuehren das Programm in einzelnen Instruktionen (stepi oder kurz si) aus,
+bis die Variablen i2,i2 in main belegt wurden
+
+(gdb) stepi  (oder kurz si)
+(gdb)        (Eingabetaste -> letzte Kommando wiederholen)
+
+   ┌───────────────────────────────────────────────────────────────────────┐
+B+ │0x804843f       movl   $0x11223344,-0x10(%ebp)                         │
+   │0x8048446       movl   $0x55667788,-0xc(%ebp)                          │
+  >│0x804844d       pushl  -0xc(%ebp)                                      │
+   │0x8048450       pushl  -0x10(%ebp)                                     │
+   │0x8048453       call   0x8048414 <swap>                                │
+
+
+# Erneuter Dump des stack frames
+
+(gdb) stack_all32 
+-----------
+0xbffff8d0: 0xffffffff
+0xbffff8d4: 0x00166196
+0xbffff8d8: 0x11223344
+0xbffff8dc: 0x55667788
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 0
+-----------
+
+# Jetzt sind i1 und i2 belegt (0x11223344, 0x55667788)
+
+Optional: Zeige rohen Stack-Dump (man sieht hier die Architektur 'little endian')
+
+(gdb) x/16xb $sp
+0xbffff8d0:     0xff    0xff    0xff    0xff    0x96    0x61    0x16    0x00
+0xbffff8d8:     0x44    0x33    0x22    0x11    0x88    0x77    0x66    0x55
+
+
+Check:
+
+(gdb) p &i1
+$3 = (int *) 0xbffff8d8
+(gdb) p &i2
+$4 = (int *) 0xbffff8dc
+
+Die Variable main::i1 liegt an Adresse 0xbffff8d8
+Die Variable main::i2 liegt an Adresse 0xbffff8dc
+
+Wir fuehren das Programm instruktionsweise (stepi or si for short) aus, bis
+wir direkt vor dem Aufruf der Funktion swap sind
+
+(gdb) stepi  (oder kurz si)
+(gdb) (Eingabetaste -> Wiederhole Kommando) 
+
+B+ │0x804843f       movl   $0x11223344,-0x10(%ebp)                         │
+   │0x8048446       movl   $0x55667788,-0xc(%ebp)                          │
+   │0x804844d       pushl  -0xc(%ebp)                                      │
+   │0x8048450       pushl  -0x10(%ebp)                                     │
+  >│0x8048453       call   0x8048414 <swap>                                │
+
+# Erneuter Dump des stack frames
+(gdb) stack_all32 
+-----------
+0xbffff8c8: 0x11223344
+0xbffff8cc: 0x55667788
+0xbffff8d0: 0xffffffff
+0xbffff8d4: 0x00166196
+0xbffff8d8: 0x11223344
+0xbffff8dc: 0x55667788
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 0
+-----------
+
+Durch die pushl-Aufrufe wurden die Parameter von swap mit Werten versorgt
+
+Die Kopien von i1,i2 liegen an
+    a: 0xbffff8c8
+    b: 0xbffff8cc
+
+Die Parameter werden von rechts nach links auf den Stack gelegt.
+Bei swap(i1,i2) also zuerst Kopie von i2 und dann Kopie von i1.
+Die Kopie des ersten Parameters liegt also zuoberst (kleinste Adresse)
+auf dem Stack
+
+# Jetzt die Funktion swap betreten mit einem stepi
+
+(gdb) si
+O# und dann drei weitere si bis vor
+
+   │0x804841a               mov    0x8(%ebp),%eax                          │
+
+Wir überspringen die Einrichtung des Stack-Frames (die ersten drei Befehle)
+
+(gdb) si
+(gdb) si
+(gdb) si
+
+   │0x8048414 <swap>        push   %ebp                                    │
+   │0x8048415 <swap+1>      mov    %esp,%ebp                               │
+   │0x8048417               sub    $0x10,%esp                              │
+  >│0x804841a               mov    0x8(%ebp),%eax                          │
+   │0x804841d               mov    %eax,-0x4(%ebp)                         │
+   │0x8048420               mov    0xc(%ebp),%eax                          │
+   │0x8048423               mov    %eax,0x8(%ebp)                          │
+   │0x8048426               mov    -0x4(%ebp),%eax                         │
+   │0x8048429               mov    %eax,0xc(%ebp)                          │
+   │0x804842c               leave                                          │
+   │0x804842d               ret                                            │
+
+Memory dump zu Beginn von Swap
+
+(gdb) winheight asm 7
+(gdb) stack_all32
+
+----------- 
+0xbffff8b0: 0x080484a0 
+0xbffff8b4: 0x08049ff4
+0xbffff8b8: 0x00000001
+0xbffff8bc: 0x080482fd
+0xbffff8c0: 0xbffff8e8 <--- fp 0
+0xbffff8c4: 0x08048458
+0xbffff8c8: 0x11223344
+0xbffff8cc: 0x55667788
+0xbffff8d0: 0xffffffff
+0xbffff8d4: 0x00166196
+0xbffff8d8: 0x11223344 
+0xbffff8dc: 0x55667788
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 1
+-----------
+
+Der Frame-Pointer $fp (%ebp) und der Stack-Pointer $sp (%esp)
+wurden an das Frame von swap angepasst.
+
+(gdb) p $fp
+$5 = (void *) 0xbffff8c0
+(gdb) p $sp
+$6 = (void *) 0xbffff8b0
+
+Nun werden die Instruktionen fuer den Werttausch in swap ausgefuehrt
+
+Ctrl-x a  (verlasse TUI-Mode)
+
+(gdb) disass /m swap
+
+Dump of assembler code for function swap:
+12      void swap(int a, int b) {
+   0x08048414 <+0>:     push   %ebp
+   0x08048415 <+1>:     mov    %esp,%ebp
+   0x08048417:  sub    $0x10,%esp
+
+13          int tmp = a;
+=> 0x0804841a:  mov    0x8(%ebp),%eax
+   0x0804841d:  mov    %eax,-0x4(%ebp)
+
+14          a = b;
+   0x08048420:  mov    0xc(%ebp),%eax
+   0x08048423:  mov    %eax,0x8(%ebp)
+
+15          b = tmp;
+   0x08048426:  mov    -0x4(%ebp),%eax
+   0x08048429:  mov    %eax,0xc(%ebp)
+
+16      }
+   0x0804842c:  leave  
+   0x0804842d:  ret    
+
+End of assembler dump.
+
+ctrl-x a (zurueck in den TUI-Mode)
+
+#------
+
+Nun 2 mal Single Instruction Steps fuer
+13	    int tmp = a;
+   0x0804841a:	mov    0x8(%ebp),%eax
+   0x0804841d:	mov    %eax,-0x4(%ebp)
+
+(gdb) si
+(gdb) si
+
+Der im Parameter a liegende Wert landet in der lokalen Variablen tmp
+
+Check Adresse von lokaler Variable tmp:
+(gdb) p &tmp
+$7 = (int *) 0xbffff8bc
+(gdb) p $fp - 4
+$8 = (void *) 0xbffff8bc
+
+Check Adresse von Parameter a:
+(gdb) p &a
+$9 = (int *) 0xbffff8c8
+(gdb) p $fp + 8
+$10 = (void *) 0xbffff8c8
+
+# Stackdump nach Zuweisung tmp = a
+
+(gdb) stack_all32
+
+-----------
+0xbffff8b0: 0x080484a0
+0xbffff8b4: 0x08049ff4
+0xbffff8b8: 0x00000001
+0xbffff8bc: 0x11223344 <--- tmp
+0xbffff8c0: 0xbffff8e8 <--- fp 0
+0xbffff8c4: 0x08048458
+0xbffff8c8: 0x11223344 <---- a
+0xbffff8cc: 0x55667788
+...
+
+#------
+
+Nun 2 mal Single Instuction Steps fuer
+14	    a = b;
+   0x08048420:	mov    0xc(%ebp),%eax
+   0x08048423:	mov    %eax,0x8(%ebp)
+
+(gdb) si
+(gdb) si
+
+Der Wert von b wird nach a gespeichert
+
+# Stackdump nach Zuweisung a = b
+
+(gdb) stack_all32
+
+-----------
+0xbffff8b0: 0x080484a0
+0xbffff8b4: 0x08049ff4
+0xbffff8b8: 0x00000001
+0xbffff8bc: 0x11223344 <--- tmp
+0xbffff8c0: 0xbffff8e8 <--- fp 0
+0xbffff8c4: 0x08048458
+0xbffff8c8: 0x55667788 <--- a
+0xbffff8cc: 0x55667788 <--- b
+
+#------ 
+Nun noch 2 mal Single Instruction Steps fuer
+
+15	    b = tmp;
+   0x08048426:	mov    -0x4(%ebp),%eax
+   0x08048429:	mov    %eax,0xc(%ebp)
+
+(gdb) si
+(gdb) si
+
+Der Wert von tmp wird in b gespeichert
+
+Dump nach Ausfuehrung aller Tauschoperationen
+
+(gdb) stack_all32
+
+-----------
+0xbffff8b0: 0x080484a0
+0xbffff8b4: 0x08049ff4
+0xbffff8b8: 0x00000001
+0xbffff8bc: 0x11223344 <--- tmp
+0xbffff8c0: 0xbffff8e8 <--- fp 0
+0xbffff8c4: 0x08048458
+0xbffff8c8: 0x55667788 <--- a
+0xbffff8cc: 0x11223344 <--- b
+0xbffff8d0: 0xffffffff
+0xbffff8d4: 0x00166196
+0xbffff8d8: 0x11223344 <--- i1
+0xbffff8dc: 0x55667788 <--- i2
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 0
+-----------
+
+
+Wir führen weiter mittels si aus und verlassen die Funktion swap
+(gdb) si
+(gdb) si
+
+   │0x8048453       call   0x8048414 <swap>                                │
+  >│0x8048458       add    $0x8,%esp                                       │
+   │0x804845b       sub    $0xc,%esp                                       │
+   │0x804845e       push   $0x8048570                                      │
+
+Im Frame der Funktion main hat sich nichts geaendert, da swap
+die Werte von i1 und i2 in Kopie erhalten hat.
+
+(gdb) stack_all32 
+-----------
+0xbffff8c8: 0x55667788
+0xbffff8cc: 0x11223344
+0xbffff8d0: 0xffffffff
+0xbffff8d4: 0x00166196
+0xbffff8d8: 0x11223344
+0xbffff8dc: 0x55667788
+0xbffff8e0: 0x0011f280
+0xbffff8e4: 0xbffff900
+0xbffff8e8: 0x00000000 <--- fp 0
+-----------
+
+Check:
+
+(gdb)  p &i1
+$11 = (int *) 0xbffff8d8
+(gdb)  p &i2
+$12 = (int *) 0xbffff8dc
+
+#
+# Beenden
+
+Ctrl-d

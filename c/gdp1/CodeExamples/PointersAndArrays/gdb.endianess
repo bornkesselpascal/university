@@ -1,0 +1,6 @@
+source gdb.stackdump
+break main
+winheight src 10
+run
+set_bfp
+

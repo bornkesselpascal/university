@@ -1,0 +1,34 @@
+# Source:
+# See http://www.linuxjournal.com/article/7275
+#
+# A single linked list
+# Use command
+#   vimdot <dot-filename>
+# for interactive editing
+# 
+# Use command
+#   dot -Txlib <dot-filename> &
+# or if you install utility xdot via 'sudo aptitude install xdot'
+#   xdot <dot-filename> &
+# for display only
+
+digraph G {
+# define nodes in the list
+  node [shape = record];
+  node0 [ label ="<a> 10 | <p>"];
+  node1 [ label ="<a> 11 | <p>"];
+  node2 [ label ="<a> 12 | <p>"];
+  node3 [ label ="<a> 13 | <p>"];
+  node4 [ label ="<a> 14 | <p>"];
+
+# last pseudo node for NULL
+  node [shape = plaintext];
+  node5 [ label ="NULL"];
+
+# define edges
+  "node0":p:s -> "node1":a:n;
+  "node1":p:s -> "node2":a:n;
+  "node2":p:s -> "node3":a:n;
+  "node3":p:s -> "node4":a:n;
+  "node4":p:s -> "node5";
+}

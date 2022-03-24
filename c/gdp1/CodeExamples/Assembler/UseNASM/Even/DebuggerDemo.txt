@@ -1,0 +1,119 @@
+#
+# For doc about debugging assembler files, see e.g.
+# https://www.csee.umbc.edu/portal/help/nasm/nasm.shtml
+#
+
+$ make clean; make
+
+$ gdbtui -q bin/even
+
+(gdb)
+break main
+set disassembly-flavor intel
+run
+
+winheight src 15
+
+source gdb.flags
+source gdb.stackdump
+
+# Mittels 'ni' (next instruction)  schrittweise ausführen, bis das nächste
+# Kommando wie folgt lautet:
+# push      prompt_n1
+
+ni
+...
+
+   │42          ; --------------------------------------------------------  │
+   │43          ; read first number n1                                      │
+   │44          ; push argument for call of printf                          │
+  >│45          push      prompt_n1                                         │
+
+
+# Initialen Framepointer setzen
+
+set_bfp 
+
+# Das aktuelle Stack-Frame ausgeben:
+# Hinweis: auf Deiner Maschine siehst Du vermutlich eine andere
+# Adresse als '0xbffff878'
+
+stack_all32 
+
+-----------
+0xbffff878: 0x00000000 <--- fp 0
+-----------
+
+Wir setzen Breakpoints an den Marken check, even, odd, cont
+
+break check
+break even
+break odd
+break cont
+
+Nun mittels 'ni' (next instruction) oder 'si' (step instruction)
+den Assemblercode schrittweise  oder mittels 'cont' (continue) bis zum nächsten
+Breakpoint ausführen.
+
+Bei Interesse zwischendurch die Stack-Frames ausgeben 'stack_all32'
+
+Tip: Strg-L bereinigt die Anzeige, wenn die Ein-/Ausgabe des laufenden
+Programms die Darstellung im gdb zerstört.
+
+#------------------------------------------------
+# Tip: Prozessor-Flags anzeigen und setzen
+
+Mittels
+  p $eflags
+kann man die Flags anzeigen lassen, die gesetzt sind.
+
+Beispiel:
+
+(gdb) p $eflags
+$8 = [ SF IF ]
+
+==> 
+
+Oder binär:
+
+(gdb) p /t $eflags
+$9 = 1010000010
+
+# Flags setzen: $eflags | (bitmask)
+
+Beispiel: setzte Carry Flag CF (Bit 1 von rechts)
+
+p  $eflags = $eflags | 0b1 
+
+Beispiel: setzte Zero Flag ZF (Bit 7 von rechts)
+
+p  $eflags = $eflags | (0b1 << 6)
+
+OF: (0b1 << 0xb)
+DF: (0b1 << 0xa)
+IF: (0b1 << 0x9)
+TF: (0b1 << 0x8)
+SF: (0b1 << 0x7)
+ZF: (0b1 << 0x6)
+AF: (0b1 << 0x4)
+PF: (0b1 << 0x2)
+CF: (0b1 << 0x0)
+
+
+# Flags löschen: $eflags & ~(bitmask)
+
+Beispiel: lösche Zero Flag ZF (Bit 7 von rechts)
+p $eflags = $eflags & ~(0b1 << 6)
+
+#------------------------------------------------
+# Tip 2: Prozessor-Flags anzeigen und setzen
+#
+# Mal das GDB-Skript gdb.flags anschauen
+# Damit macht es noch mehr Spaß ;-)
+#
+# Commands:
+# flags
+# eflags
+# cfz, cfo etc.
+#
+

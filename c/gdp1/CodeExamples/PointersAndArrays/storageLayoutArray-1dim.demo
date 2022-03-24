@@ -1,0 +1,160 @@
+#----------------------------------------------------------------------
+# Teil 1: demonstriert Layout eines eindimensionalen Feldes im Speicher
+#----------------------------------------------------------------------
+
+lars@vmmint13-10:~/GdPI/CodeExamples/PointersAndArrays
+
+$ bin/storageLayoutArray-1dim 
+Base address is 0xbfe2aaac
+at index 0: address=0xbfe2aaac content=00000000
+at index 1: address=0xbfe2aab0 content=11111111
+at index 2: address=0xbfe2aab4 content=22222222
+at index 3: address=0xbfe2aab8 content=33333333
+at index 4: address=0xbfe2aabc content=44444444
+
+Wir fuehren das Programm im Debugger aus und untersuchen das Stack-Frame
+der Funktion main:
+
+Nota Bene:
+Da wir das Programm erneut starten, koennen sich die
+Speicheradressen aendern
+
+$ gdbtui -q bin/storageLayoutArray-1dim 
+
+(gdb) break main
+(gdb) run
+(gdb) next
+
+30	    dumpArray_1dim(theArray, ARRAY_SIZE);
+
+Damit der naechste Befehl 'stackw' funktioniert, muss das gdb-Skript
+  gdb.stackdump
+geladen werden. Zum Beispiel per:
+
+(gdb) winheight src 12
+(gdb) source  gdb.stackdump
+
+Man kann den Befehl zum Laden des Skripts auch in der Datei
+ ~/.gdbinit hinterlegen. Dann wird der Code immer automatisch geladen.
+
+(gdb) stackw
+
+-----------
+0xbffff880: 0x002d83e4
+0xbffff884: 0x00000005
+0xbffff888: 0x08049ff4
+0xbffff88c: 0x080484c1
+0xbffff890: 0xffffffff
+0xbffff894: 0x00166196
+0xbffff898: 0x002d7ff4
+0xbffff89c: 0x00000000
+0xbffff8a0: 0x11111111
+0xbffff8a4: 0x22222222
+0xbffff8a8: 0x33333333
+0xbffff8ac: 0x44444444
+0xbffff8b0: 0x080484a0
+0xbffff8b4: 0x00000000
+-----------
+
+Wir sehen, dass die Werte des Arrays in einem zusammenhaengenden
+Speicherblock ohne Luecken abgelegt sind.
+
+#------------------------------------------------------------------
+# Teil 2: Zur Laufzeit ist nur die Basisadresse des Arrays bekannt
+#------------------------------------------------------------------
+
+(gdb) Strg-x a (TUI-Mode verlassen)
+
+(gdb) disassemble /m main
+
+Dump of assembler code for function main:
+22	int main() {
+   0x08048447 <+0>:	push   %ebp
+   0x08048448 <+1>:	mov    %esp,%ebp
+   0x0804844a <+3>:	and    $0xfffffff0,%esp
+   0x0804844d <+6>:	sub    $0x30,%esp
+
+23	  int theArray[ARRAY_SIZE]={
+   0x08048450 <+9>:	movl   $0x0,0x1c(%esp)
+   0x08048458 <+17>:	movl   $0x11111111,0x20(%esp)
+   0x08048460 <+25>:	movl   $0x22222222,0x24(%esp)
+   0x08048468 <+33>:	movl   $0x33333333,0x28(%esp)
+   0x08048470 <+41>:	movl   $0x44444444,0x2c(%esp)
+
+24	    0x00000000,
+25	    0x11111111,
+26	    0x22222222,
+27	    0x33333333,
+28	    0x44444444,
+29	  };
+30	
+31	  dumpArray_1dim(theArray, ARRAY_SIZE);
+=> 0x08048478 <+49>:	movl   $0x5,0x4(%esp)
+   0x08048480 <+57>:	lea    0x1c(%esp),%eax
+   0x08048484 <+61>:	mov    %eax,(%esp)
+   0x08048487 <+64>:	call   0x80483e4 <dumpArray_1dim>
+
+(gdb) Strg-x a : TUI-Mode wieder verlassen
+
+(gdb) layout asm
+
+Fuehre zwei Instruktionen im Assembler aus, damit die Basisadresses
+des Arrays in das Register eax geladen wird.
+
+(gdb) si
+(gdb) si
+
+  │0x8048478 <main+49>     movl   $0x5,0x4(%esp)                             │
+  │0x8048480 <main+57>     lea    0x1c(%esp),%eax                            │
+ >│0x8048484 <main+61>     mov    %eax,(%esp)                                │
+  │0x8048487 <main+64>     call   0x80483e4 <dumpArray_1dim>                 │
+  │0x804848c <main+69>     mov    $0x0,%eax                                  │
+
+Nachpruefen der Adressen
+
+(gdb) p /x $sp + 0x1c
+$1 = 0xbffff89c
+(gdb) p /x $eax
+$2 = 0xbffff89c
+(gdb) p &theArray
+$3 = (int (*)[5]) 0xbffff89c
+
+Im Code wird also explizit die Basisadresse des Arrays hart kodiert.
+Hier $sp + 0x1c
+
+Mehr ist von dem Array zur Laufzeit nicht bekannt.
+Insbesondere gibt es keine Variable (Pointer), die die Adresse enthalten
+wuerde! Im C-Code steht der Name des Arrays fuer die feste Basisadresse.
+
+Größe des Arrays in Byte kann nur in dem Scope erfragt werden, in dem
+die Definition stattfindet:
+
+(gdb) p sizeof(theArray)
+$4 = 20
+
+Wir führen den call-Befehl aus
+
+(gdb) s
+   │0x80483e4 <dumpArray_1dim>      push   %ebp                               │
+   │0x80483e5 <dumpArray_1dim+1>    mov    %esp,%ebp                          │
+   │0x80483e7 <dumpArray_1dim+3>    sub    $0x28,%esp                         │
+  >│0x80483ea <dumpArray_1dim+6>    mov    $0x8048570,%eax                    │
+   │0x80483ef <dumpArray_1dim+11>   mov    0x8(%ebp),%edx                     │
+
+Achtung:
+In der Funktion dumpArray_1dim ist nur noch die Basis-Adresse
+des Arrays bekannt. Die Größe ist immer nur im Scope der Definition
+des Arrays bekannt.
+
+(gdb) p &anArray
+$2 = (int **) 0xbffff880
+
+Vgl mit oben: $3 = (int (*)[5]) 0xbffff89c
+
+=> Konstrukte wie siezof(anArray) sind nicht zielführend, um
+die Größe des Arrays zu erfahren.
+
+(gdb) p sizeof(anArray)
+$5 = 4
+
+

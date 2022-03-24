@@ -1,0 +1,74 @@
+#----------------------------------------------------------------------
+# Demonstriert Layout eines zweidimensionalen Feldes im Speicher
+#----------------------------------------------------------------------
+
+# Terminal 79x30 in vmmint13
+
+lars@vmmint13-10:~/GdPI/CodeExamples/PointersAndArrays
+$ bin/storageLayoutArray-2dim 
+
+Base address is 0xbfdd5f90
+at index 0,0: address=0xbfdd5f90 content=00000000
+at index 0,1: address=0xbfdd5f94 content=00001111
+at index 0,2: address=0xbfdd5f98 content=00002222
+at index 1,0: address=0xbfdd5f9c content=11110000
+at index 1,1: address=0xbfdd5fa0 content=11111111
+at index 1,2: address=0xbfdd5fa4 content=11112222
+at index 2,0: address=0xbfdd5fa8 content=22220000
+at index 2,1: address=0xbfdd5fac content=22221111
+at index 2,2: address=0xbfdd5fb0 content=22222222
+at index 3,0: address=0xbfdd5fb4 content=33330000
+at index 3,1: address=0xbfdd5fb8 content=33331111
+at index 3,2: address=0xbfdd5fbc content=33332222
+
+Wir fuehren das Programm im Debugger aus und untersuchen das Stack-Frame
+der Funktion main:
+
+Nota Bene:
+Da wir das Programm erneut starten, koennen sich die
+Speicheradressen aendern
+
+$ gdbtui -q bin/storageLayoutArray-2dim 
+
+(gdb) break main
+(gdb) run
+(gdb) next
+
+32	    dumpArray_2dim(theArray, ROWS, COLS);
+
+Damit der naechste Befehl 'stackw' funktioniert, muss das gdb-Skript
+  gdb.stackdump
+geladen werden. Zum Beispiel per:
+
+(gdb) winheight src 12
+(gdb) source  gdb.stackdump
+
+Man kann den Befehl zum Laden des Skripts auch in der Datei
+ ~/.gdbinit hinterlegen. Dann wird der Code immer automatisch geladen.
+
+(gdb) stackw
+
+-----------
+0xbffff870: 0x08048510
+0xbffff874: 0x08049ff4
+0xbffff878: 0x00000001
+0xbffff87c: 0x080482dd
+0xbffff880: 0x00000000
+0xbffff884: 0x00001111
+0xbffff888: 0x00002222
+0xbffff88c: 0x11110000
+0xbffff890: 0x11111111
+0xbffff894: 0x11112222
+0xbffff898: 0x22220000
+0xbffff89c: 0x22221111
+0xbffff8a0: 0x22222222
+0xbffff8a4: 0x33330000
+0xbffff8a8: 0x33331111
+0xbffff8ac: 0x33332222
+0xbffff8b0: 0x08048510
+0xbffff8b4: 0x00000000
+-----------
+
+(gdb)
+
+Quit

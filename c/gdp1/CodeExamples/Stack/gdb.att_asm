@@ -1,0 +1,3 @@
+# set AT&T flavor for debugging
+set disassembly-flavor att
+
