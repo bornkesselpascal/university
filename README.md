@@ -1,1 +1,1 @@
-# university
+# Repository for study contents
