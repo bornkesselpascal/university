@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring accessors="true" comment="Delete 6 elements from project &apos;MediaPlayer_GdPII_VA08&apos;&#x0D;&#x0A;- Original project: &apos;MediaPlayer_GdPII_VA08&apos;&#x0D;&#x0A;- Original elements:&#x0D;&#x0A;     AttributesTest.java&#x0D;&#x0A;     AudioFileTest.java&#x0D;&#x0A;     EmulateOtherOs.java&#x0D;&#x0A;     SampledFileTest.java&#x0D;&#x0A;     TaggedFileTest.java&#x0D;&#x0A;     WavFileTest.java" description="Delete elements" element1="/cert&lt;{AttributesTest.java" element2="/cert&lt;{EmulateOtherOs.java" element3="/cert&lt;{SampledFileTest.java" element4="/cert&lt;{AudioFileTest.java" element5="/cert&lt;{TaggedFileTest.java" element6="/cert&lt;{WavFileTest.java" elements="6" flags="589830" id="org.eclipse.jdt.ui.delete" resources="0" stamp="1619712800482" subPackages="false" version="1.0"/>
+</session>

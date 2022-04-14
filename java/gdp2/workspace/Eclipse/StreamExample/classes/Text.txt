@@ -1,0 +1,3 @@
+Beispiel: Wie koennen mit Stream-Verarbeitung alle in einer Textdatei enthaltenen Woerter ermittelt und sortiert auf die Konsole ausgegeben werden?
+Gross-/Kleinschreibung wird nicht beruecksichtigt. Es sollen nur Buchstaben zwischen a und z bzw. A und Z beruecksichtigt werden, alles andere soll „Ueberlesen“ werden.
+Kommt ein Wort mehrfach vor, soll es nur einmal ausgegeben werden.
