@@ -13,12 +13,12 @@ void P(int sem_num);
 void V(int sem_num);
 
 
-int sem_key;
 int sem_id;
 
 
 int main(void)
 {
+    int sem_key;
     if ((sem_key = ftok("/home/bornk/Dokumente/Developer/university/c/vs/ue1", '1')) < 0)
     {
         perror("Fehler bei ftok");
