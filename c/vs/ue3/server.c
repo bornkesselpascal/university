@@ -8,8 +8,9 @@ int * add_1_svc(pair, rqstp)
 {
     int a = pair->a;
     int b = pair->b;
+    int result = a+b;
 
-    return a+b;
+    return result;
 }
 
 int * multiply_1_svc(pair, rqstp)
@@ -18,8 +19,9 @@ int * multiply_1_svc(pair, rqstp)
 {
     int a = pair->a;
     int b = pair->b;
+    int result = a*b;
 
-    return a*b;
+    return result;
 }
     
 
@@ -27,9 +29,9 @@ int * cube_1_svc(number, rqstp)
     int * number;
     struct svc_req *rqstp;
 {
-    int cube = (*number)*(*number);
+    int result = (*number)*(*number);
     
-    return cube;
+    return result;
 }
     
     
