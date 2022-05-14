@@ -18,11 +18,12 @@ const int sem_reader = 1;
 const int sem_mutex = 2;
 
 int sem_id;
+volatile int critical = 0;
 
 int main(void)
 {
     int sem_key;
-    if ((sem_key = ftok("/home/bornk/Dokumente/Developer/university/c/vs/ue3", '1')) < 0)
+    if ((sem_key = ftok("/home/lars/Dokumente/Developer/university/c/vs/ue3", '1')) < 0)
     {
         perror("Fehler bei ftok");
         exit(1);
@@ -52,7 +53,7 @@ int main(void)
 
         case 0:
             // Kindprozess
-            printf("Prozess: %ld\tPID: %d\n", process, getpid());
+            printf("Schreiber: %ld\tPID: %d\n", process, getpid());
             writer(process);
             exit(0);
 
@@ -73,7 +74,7 @@ int main(void)
 
         case 0:
             // Kindprozess
-            printf("Prozess: %ld\tPID: %d\n", process, getpid());
+            printf("Leser: %ld\tPID: %d\n", process, getpid());
             reader(process);
             exit(0);
 
@@ -86,7 +87,7 @@ int main(void)
 
 void reader(size_t process)
 {
-    while (true)
+    for (size_t i = 0; i < 3; i++)    
     {
         // Zugriff auf Variable
         P(sem_mutex);
@@ -96,11 +97,13 @@ void reader(size_t process)
             {
                 P(sem_writer);
             }
+            printf("Leser %ld: Es lesen gerade %d Leser.\n", process, (5-getval(sem_reader)));
         }
         V(sem_mutex);
 
         {
-            // READ
+            printf("Leser %ld: Prozess liest Variable.\n",process);
+            sleep(rand() % 5);
         }
 
         P(sem_mutex);
@@ -108,6 +111,7 @@ void reader(size_t process)
             V(sem_reader);
             if (5 == getval(sem_reader))
             {
+                printf("Leser %ld: Keine weiteren Leser.\n", process);
                 V(sem_writer);
             }
         }
@@ -117,29 +121,32 @@ void reader(size_t process)
 
 
         // Unkritischer Bereich
-        printf("Unkritischer Bereich TBC\n");
+        printf("Leser %ld: Prozess im unkritischen Bereich.\n", process);
         sleep(1);
     }
 }
 
 void writer(size_t process)
 {
-    while (true)
+    for (size_t i = 0; i < 3; i++)  
     {
         // Zugriff auf Variable
+        printf("Schreiber %ld: Prozess möchte schreiben.\n", process);
         P(sem_writer);
+        printf("Schreiber %ld: Prozess darf schreiben.\n", process);
 
         {
-            // WRITE
+            printf("Schreiber %ld: Variable beschrieben.\n", process);
         }
 
+        printf("Schreiber %ld: Schreiben beendet.\n", process);
         V(sem_writer);
 
         sleep(1);
 
 
         // Unkritischer Bereich
-        printf("Unkritischer Bereich TBC\n");
+        printf("Schreiber %ld: Prozess im unkritischen Bereich.\n", process);
         sleep(1);
     }
 }
