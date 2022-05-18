@@ -13,7 +13,7 @@ int main()
     CLIENT *cl;
     cl = clnt_create (servername, MATHPROG, MATHVERS, "tcp");
 
-    int r = (int) add_1(&numbers, cl);
+    int r = *multiply_1(&numbers, cl);
 
     printf("ERFOLG. r=%d\n", r);
 }
