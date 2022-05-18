@@ -23,7 +23,7 @@ volatile int critical = 0;
 int main(void)
 {
     int sem_key;
-    if ((sem_key = ftok("/home/lars/Dokumente/Developer/university/c/vs/ue3", '1')) < 0)
+    if ((sem_key = ftok("/home/bornk/Dokumente/Developer/university/c/vs/ue3", '1')) < 0)
     {
         perror("Fehler bei ftok");
         exit(1);

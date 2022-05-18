@@ -38,6 +38,6 @@ int * cube_1_svc(a, rqstp)
 
     static int r;
     r = (*a) * (*a);
-    printf("Ergebnis berechnet. %d^2 = %d.\n", *a, r);
+    printf("Ergebnis berechnet. %d ^ 2 = %d.\n", *a, r);
     return &r;
 }
