@@ -2,18 +2,19 @@
 public class EineFigur extends Figur{
 
 	@Override
-	public void setPosition(char x, int y) {
+	public synchronized void setPosition(char x, int y) {
 		this.x = x;
 		MachMal.eineZehntelSekundeLangGarNichts();
 		this.y = y;
 	}
 
 	@Override
-	public String getPosition() {
+	public synchronized String getPosition() {
 		for(int i = 0; i < 10; i++) {
 			MachMal.eineZehntelSekundeLangGarNichts();
 		}
-		return null;
+		String r = String.valueOf(x) + " " + Integer.toString(y);
+		return r;
 	}
 
 }
