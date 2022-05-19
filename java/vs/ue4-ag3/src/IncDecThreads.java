@@ -64,6 +64,6 @@ public class IncDecThreads extends Thread {
   
   public void run() {
     demoUnSync ();  // Unsynchronisiertes Z�hlen
-    //demoSync ();  // Synchronisiertes Z�hlen
+    //demo ();  // Synchronisiertes Z�hlen
   }
 }
