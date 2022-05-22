@@ -13,7 +13,7 @@ public class EineFigur extends Figur{
 		for(int i = 0; i < 10; i++) {
 			MachMal.eineZehntelSekundeLangGarNichts();
 		}
-		String r = String.valueOf(x) + " " + Integer.toString(y);
+		String r = String.valueOf(x) + "." + Integer.toString(y);
 		return r;
 	}
 

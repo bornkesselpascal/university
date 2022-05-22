@@ -6,6 +6,7 @@ public class FigurenThreads {
 		
 		Thread writer = new Thread(new Schreiber(myFigur));
 		writer.setDaemon(true);
+		MachMal.eineZehntelSekundeLangGarNichts();
 		Thread reader = new Thread(new Leser(myFigur));
 		
 		writer.start();

@@ -44,14 +44,14 @@ public class IncDecThreads extends Thread {
   
 
   // Unsynchronisiert geht es schnell, aber....
-  public void demoUnSync () {
+  public synchronized void demoUnSync () {
     for (long i = 0; i < MAX; i++) {
       zaehler = zaehler + increment;
     }
   }
 
   // Einfach rauf oder runter z�hlen...
-  public void demo () {
+  public synchronized void demo () {
     for (long i = 0; i < 100; i++) {
       zaehler = zaehler + increment;
       try {
@@ -64,6 +64,6 @@ public class IncDecThreads extends Thread {
   
   public void run() {
     demoUnSync ();  // Unsynchronisiertes Z�hlen
-    //demo ();  // Synchronisiertes Z�hlen
+    // demo ();  // Synchronisiertes Z�hlen
   }
 }
