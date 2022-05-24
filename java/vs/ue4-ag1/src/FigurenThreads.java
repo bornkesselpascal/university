@@ -12,5 +12,4 @@ public class FigurenThreads {
 		writer.start();
 		reader.start();
 	}
-
 }

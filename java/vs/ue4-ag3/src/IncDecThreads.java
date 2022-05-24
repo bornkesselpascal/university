@@ -1,8 +1,8 @@
 // File  : IncDecThreads.java
 // Date  : 9.8.2005 23:15:35
 
-// Diese Klasse definiert einen Z�hler,
-// der von einem Thread um die Gr��e increment
+// Diese Klasse definiert einen Zähler,
+// der von einem Thread um die Größe increment
 // weitergeschaltet wird.
 // In der Anwendung wird als increment nur +1 bzw. -1 benutzt.
 // Das Programm entstand in Kooperation mit
@@ -10,7 +10,8 @@
 
 // Ab JDK 1.5
 
-public class IncDecThreads extends Thread {
+public class IncDecThreads extends Thread  {
+
   // Maximim für die Iteration
   public static final long MAX = 10000000;
   // Um die folgende Größe weiterschalten
@@ -44,10 +45,12 @@ public class IncDecThreads extends Thread {
   
 
   // Unsynchronisiert geht es schnell, aber....
-  public synchronized void demoUnSync () {
-    for (long i = 0; i < MAX; i++) {
-      zaehler = zaehler + increment;
-    }
+  public void demoUnSync () {
+	  synchronized (Globals.lock) {
+		    for (long i = 0; i < MAX; i++) {
+		        zaehler = zaehler + increment;
+		      }
+	  }
   }
 
   // Einfach rauf oder runter z�hlen...
