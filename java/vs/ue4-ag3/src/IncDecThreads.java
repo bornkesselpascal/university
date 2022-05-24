@@ -11,6 +11,7 @@
 // Ab JDK 1.5
 
 public class IncDecThreads extends Thread  {
+  public static Object lock = new Object();
 
   // Maximim für die Iteration
   public static final long MAX = 10000000;
@@ -46,7 +47,7 @@ public class IncDecThreads extends Thread  {
 
   // Unsynchronisiert geht es schnell, aber....
   public void demoUnSync () {
-	  synchronized (Globals.lock) {
+	  synchronized (lock) {
 		    for (long i = 0; i < MAX; i++) {
 		        zaehler = zaehler + increment;
 		      }

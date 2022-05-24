@@ -7,6 +7,6 @@ public class DaytimeImpl extends UnicastRemoteObject implements Daytime {
 	}
 
 	public String getTime() {
-		return new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new java.util.Date());
+		return new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new java.util.Date());
 	}
 }

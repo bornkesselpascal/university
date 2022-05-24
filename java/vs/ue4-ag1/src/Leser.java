@@ -5,7 +5,7 @@ public class Leser extends Thread {
   }
   public void run () {
     for (int i=1; i<=30; i++) {
-      System.out.print(f.getPosition() + " ");
+      System.out.printf(f.getPosition() + " ");
       if (i % 10 == 0)
         System.out.println();
     }
