@@ -37,7 +37,7 @@ int * cube_1_svc(a, rqstp)
     printf("Funktion CUBE aufgerufen.\n");
 
     static int r;
-    r = (*a) * (*a);
+    r = (*a) * (*a) * (*a);
     printf("Ergebnis berechnet. %d ^ 2 = %d.\n", *a, r);
     return &r;
 }
