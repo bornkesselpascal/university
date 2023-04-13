@@ -10,8 +10,13 @@ function gray_output = flashadc(u_x, u_r, u_cc, u_ee, bit)
 % bit:         Auflösung des A/D Wandlers in Bit            [Skalar]
 % gray_output: Gray-codiertes Ausgangssignal                [Zeilenvektor]
 
+gray_output = '';
 
-res_sum = zeros(length(u_x), 1);
+% Berechnung der Widerstände
+u_k = zeros((2^bit - 1), 1);
+for comparator = 1:(2^bit - 1)
+    u_k(comparator) = spannungsteiler(u_r, comparator, (2.^bit));
+end
 
 % Schleife mit jedem Wert des Signalvektors
 for index = 1:length(u_x)
@@ -20,8 +25,7 @@ for index = 1:length(u_x)
 
     % Vergleich des aktuellen Wertes mit den Referenzspannungen
     for comparator = 1:(2^bit - 1)
-        u_k = spannungsteiler(u_r, comparator, (2.^bit));
-        com = komparator(value, u_k, u_cc, u_ee);
+        com = komparator(value, u_k(comparator), u_cc, u_ee);
         if com == 0
             break
         end
@@ -29,17 +33,8 @@ for index = 1:length(u_x)
         sum = sum + com;
     end
 
-    res_sum(index) = sum;
-end
-
-
-gray_output = '';
-
-% Encoder
-for index = 1:length(res_sum)
-    tmp_binaer = dezimal_binaer_konvertierung(res_sum(index));
-    tmp_gray   = binaer_gray_konvertierung(tmp_binaer);
-
+    % Encoder
+    tmp_gray   = binaer_gray_konvertierung(dezimal_binaer_konvertierung(sum));
     while length(tmp_gray) < bit
         tmp_gray = ['0', tmp_gray];
     end

@@ -8,7 +8,7 @@ u_x = audioread('fadc_short.wav');
 
 
 % Wiedergabe des unveränderten Audiosignals
-sound(u_x);
+% sound(u_x);
 
 
 % Digitalisierung des Audiosignals
@@ -37,7 +37,7 @@ t = 1:length(u_r);
 
 plot(t, u_x);
 plot(t, u_r);
-plot(t, error);
+%plot(t, error);
 hold off
 
 legend('u_x','u_r', 'error');
