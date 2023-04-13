@@ -22,6 +22,9 @@ elseif(nbr > 0)
     end
 
     output = fliplr(res);
+else
+    % Negative Integers
+    error("Diese Funktion ist nicht für negative Zahlen implementiert.");
 end
 
 end

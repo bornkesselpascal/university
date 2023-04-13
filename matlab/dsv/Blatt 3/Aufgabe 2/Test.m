@@ -5,4 +5,4 @@
 input = '1000';
 
 test1 = binaer_gray_konvertierung(input)
-test2 = gray_binaer_konvertierung(input)
+test2 = gray_binaer_konvertierung(test1)
