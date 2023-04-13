@@ -4,7 +4,7 @@
 
 % Vor dem Ausführen bitte den Ornder Functions zum Pfad hinzufügen.
 
-u_x = audioread('fadc_short.wav');
+u_x = audioread('fadc.wav');
 
 
 % Wiedergabe des unveränderten Audiosignals
@@ -22,7 +22,7 @@ for index = 1:length(u_d)
     tmp_binaer = gray_binaer_konvertierung(u_d(index, :));
     tmp_dezimal = binaer_dezimal_konvertierung(tmp_binaer);
 
-    u_r(index) = tmp_dezimal/(2^bits - 1);
+    u_r(index) = tmp_dezimal/(2^bits);
 end
 
 
@@ -34,12 +34,11 @@ hold on
 xlabel('t');
 ylabel('u');
 t = 1:length(u_r);
-
 plot(t, u_x);
 plot(t, u_r);
-%plot(t, error);
+plot(t, error);
 hold off
 
 legend('u_x','u_r', 'error');
 
-sound(u_r)
+%sound(u_r)
