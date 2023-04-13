@@ -10,21 +10,29 @@ function gray_output = flashadc(u_x, u_r, u_cc, u_ee, bit)
 % bit:         Auflösung des A/D Wandlers in Bit            [Skalar]
 % gray_output: Gray-codiertes Ausgangssignal                [Zeilenvektor]
 
-res_com = zeros(length(u_x), (2.^bit - 1));
+
+res_sum = zeros(length(u_x), 1);
 
 % Schleife mit jedem Wert des Signalvektors
 for index = 1:length(u_x)
     value = u_x(index);
+    sum = 0;
 
     % Vergleich des aktuellen Wertes mit den Referenzspannungen
     for comparator = 1:(2^bit - 1)
         u_k = spannungsteiler(u_r, comparator, (2.^bit));
-        res_com(index, comparator) = komparator(value, u_k, u_cc, u_ee);
+        com = komparator(value, u_k, u_cc, u_ee);
+        if com == 0
+            break
+        end
+
+        sum = sum + com;
     end
+
+    res_sum(index) = sum;
 end
 
 
-res_sum = sum(res_com, 2);
 gray_output = '';
 
 % Encoder

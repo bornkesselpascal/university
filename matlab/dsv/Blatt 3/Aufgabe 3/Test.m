@@ -2,11 +2,13 @@
 % Pascal Julian Bornkessel, FFI 6
 % Blatt 3, Aufgabe 3
 
+% Vor dem Ausführen bitte den Ornder Functions zum Pfad hinzufügen.
+
 u_x = audioread('fadc_short.wav');
 
 
 % Wiedergabe des unveränderten Audiosignals
-% sound(u_x);
+sound(u_x);
 
 
 % Digitalisierung des Audiosignals
@@ -29,9 +31,15 @@ error = u_x - u_r;
 
 clf;
 hold on
+xlabel('t');
+ylabel('u');
+t = 1:length(u_r);
+
 plot(t, u_x);
 plot(t, u_r);
 plot(t, error);
 hold off
+
+legend('u_x','u_r', 'error');
 
 sound(u_r)
