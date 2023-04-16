@@ -3,6 +3,7 @@
 % Blatt 3, Aufgabe 3
 
 % Vor dem Ausführen bitte den Ornder Functions zum Pfad hinzufügen.
+% Die Konvertierung der gesamten Datei dauert einige Minuten (~2).
 
 u_x = audioread('fadc.wav');
 
