@@ -40,9 +40,9 @@ P1_s7(2:end-1) = 2*P1_s7(2:end-1);
 
 %% iDFT (Inverse) Berechnen
 if teilaufgabe_e
-    P1_I_s5 = dft_inverse(N, Y_s5);
-    P1_I_s6 = dft_inverse(N, Y_s6);
-    P1_I_s7 = dft_inverse(N, Y_s7);
+    inv_s5 = dft_inverse(N, Y_s5);
+    inv_s6 = dft_inverse(N, Y_s6);
+    inv_s7 = dft_inverse(N, Y_s7);
 end
     
 %% Ergebnisse Plotten
@@ -57,7 +57,7 @@ subplot(4,1,2);
 stem(0:N/2,P1_s5)
 if teilaufgabe_e
     hold on
-    stem(0:N/2,P1_I_s5)
+    plot(real(inv_s5))
     hold off
 end
 xlim([0 N/2]);
@@ -69,7 +69,7 @@ subplot(4,1,3);
 stem(0:N/2,P1_s6)
 if teilaufgabe_e
     hold on
-    stem(0:N/2,P1_I_s6)
+    plot(real(inv_s6))
     hold off
 end
 xlim([0 N/2]);
@@ -81,7 +81,7 @@ subplot(4,1,4);
 stem(0:N/2,P1_s7)
 if teilaufgabe_e
     hold on
-    stem(0:N/2,P1_I_s7)
+    plot(real(inv_s7))
     hold off
 end
 xlim([0 N/2]);
@@ -90,26 +90,16 @@ xlabel('f (Hz)')
 ylabel('|P(f)|')
 
 
-function P1_inv = dft_inverse(N,signal)
-% Berechnet die inverse eines DFT und gibt das einseitige Spektrum zurück
-
-idft = zeros(1,N);
+function Inv = dft_inverse(N,signal)
+% Berechnet die inverse eines DFT
+Inv = zeros(1,N);
 
 for k = 1:N
-    re_tmp = 0;
-    im_tmp = 0;
-
-    for n = 1:N            
-        %% Realteil von DFT(x(k))
-        re_tmp = re_tmp + signal(n) * cos(2*pi*(((k-1)*(n-1))/N));
- 
-        %% Imaginaerteil von DFT(x(k))
-        im_tmp = im_tmp + signal(n) * sin(2*pi*(((k-1)*(n-1))/N));
+    for n = 1:N
+        Inv(k) = Inv(k) + (signal(n) .* cos(2*pi*(((k-1)*(n-1))/N)) + i *signal(n) .* sin(2*pi*(((k-1)*(n-1))/N)));
     end
-    idft(k) = ((1/N) * re_tmp) + ((1/N) * im_tmp);
 end
 
-P2_inv = abs(idft); % idft/N???
-P1_inv = P2_inv(1:N/2+1);
-P1_inv(2:end-1) = 2*P1_inv(2:end-1);
+Inv = 1/N * Inv;
+
 end
