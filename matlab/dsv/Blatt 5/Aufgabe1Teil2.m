@@ -2,9 +2,6 @@
 % Pascal Julian Bornkessel, FFI 6
 % Blatt 5, Aufgabe 1 (Teilaufgabe d bis e)
 
-teilaufgabe_e = true;
-
-
 Fs = 8192;               % Abtastfrequenz
 T = 1/Fs;                % Abtastperiode
 N = 8192;                % Signallaenge
@@ -39,55 +36,75 @@ P1_s7 = P2_s7(1:N/2+1);
 P1_s7(2:end-1) = 2*P1_s7(2:end-1);
 
 %% iDFT (Inverse) Berechnen
-if teilaufgabe_e
-    inv_s5 = dft_inverse(N, Y_s5);
-    inv_s6 = dft_inverse(N, Y_s6);
-    inv_s7 = dft_inverse(N, Y_s7);
-end
+inv_s5 = dft_inverse(N, Y_s5);
+inv_s6 = dft_inverse(N, Y_s6);
+inv_s7 = dft_inverse(N, Y_s7);
     
 %% Ergebnisse Plotten
-subplot(4,1,1);
+subplot(4,2,1);
 stem(0:N/2,P1_s4)
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S4(t) [Berechnung mit Funktion]')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
 
-subplot(4,1,2);
+subplot(4,2,2);
+plot(S4);
+title('Signal S4')
+xlabel('n')
+ylabel('S[n]')
+legend('Original')
+
+subplot(4,2,3);
 stem(0:N/2,P1_s5)
-if teilaufgabe_e
-    hold on
-    plot(real(inv_s5))
-    hold off
-end
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S5(t) [Berechnung mit Funktion]')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
 
-subplot(4,1,3);
+subplot(4,2,4);
+plot(S5);
+hold on
+plot(real(inv_s5))
+hold off
+title('Signal S5')
+xlabel('n')
+ylabel('S[n]')
+legend('Original','InverseDFT')
+
+subplot(4,2,5);
 stem(0:N/2,P1_s6)
-if teilaufgabe_e
-    hold on
-    plot(real(inv_s6))
-    hold off
-end
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S6(t) [Berechnung mit Funktion]')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
 
-subplot(4,1,4);
+subplot(4,2,6);
+plot(S6);
+hold on
+plot(real(inv_s6))
+hold off
+title('Signal S6')
+xlabel('n')
+ylabel('S[n]')
+legend('Original','InverseDFT')
+
+subplot(4,2,7);
 stem(0:N/2,P1_s7)
-if teilaufgabe_e
-    hold on
-    plot(real(inv_s7))
-    hold off
-end
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S7(t) [Berechnung mit Funktion]')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
+
+subplot(4,2,8);
+plot(S7);
+hold on
+plot(real(inv_s7))
+hold off
+title('Signal S7')
+xlabel('n')
+ylabel('S[n]')
+legend('Original','InverseDFT')
 
 
 function Inv = dft_inverse(N,signal)
