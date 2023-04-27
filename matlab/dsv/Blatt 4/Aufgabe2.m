@@ -50,9 +50,9 @@ u_eff_n5 = rms(noise_s5);
 u_eff_n6 = rms(noise_s6);
 u_eff_n7 = rms(noise_s7);
 
-SNR_s5 = 10 * log((u_eff_s4^2)/(u_eff_n5^2));
-SNR_s6 = 10 * log((u_eff_s4^2)/(u_eff_n6^2));
-SNR_s7 = 10 * log((u_eff_s4^2)/(u_eff_n7^2));
+SNR_s5 = 10 * log10((u_eff_s4^2)/(u_eff_n5^2));
+SNR_s6 = 10 * log10((u_eff_s4^2)/(u_eff_n6^2));
+SNR_s7 = 10 * log10((u_eff_s4^2)/(u_eff_n7^2));
 
 
 %% Wiedergabe
