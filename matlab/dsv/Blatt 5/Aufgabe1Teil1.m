@@ -60,3 +60,4 @@ xlim([0 N/2]);
 title('Einseitiges Spektrum von S4(t) [Berechnung mit Funktion]')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
+
