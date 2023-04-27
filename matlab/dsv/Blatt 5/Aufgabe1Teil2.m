@@ -14,10 +14,10 @@ S6 = S4 + (0.1  * randn(1, N));
 S7 = S4 + (5    * randn(1, N));
 
 %% DFT Berechnen
-Y_s4 = fft(S4);
-Y_s5 = fft(S5);
-Y_s6 = fft(S6);
-Y_s7 = fft(S7);
+Y_s4 = dft(N, S4);
+Y_s5 = dft(N, S5);
+Y_s6 = dft(N, S6);
+Y_s7 = dft(N, S7);
     
 %% Zweiseitiges normiertes Spektrum
 P2_s4 = abs(Y_s4/N);
@@ -106,6 +106,17 @@ xlabel('n')
 ylabel('S[n]')
 legend('Original','InverseDFT')
 
+function Ft = dft(N,signal)
+% Berechnet die inverse eines DFT
+Ft = zeros(1,N);
+
+for k = 1:N
+    for n = 1:N
+        Ft(k) = Ft(k) + (signal(n) .* cos(2*pi*(((k-1)*(n-1))/N)) - i *signal(n) .* sin(2*pi*(((k-1)*(n-1))/N)));
+    end
+end
+
+end
 
 function Inv = dft_inverse(N,signal)
 % Berechnet die inverse eines DFT
