@@ -70,7 +70,7 @@ S9 = ifft(S9_fft);
 
 
 
-%% Entwurf der Koeffizienten (Teilaufgabe B)
+%% Entwurf der Koeffizienten (Teilaufgabe C)
 M_c = 400;
 d = 10;
 
@@ -93,7 +93,7 @@ h_1500_c = (h_1500_2_c - h_1500_1_c) .* w_c;
 
 % Parallelschaltung der Bandpassfilter
 h_c = h_500_c + h_1000_c + h_1500_c;
-plot(2*abs(fft((h_c)/N))); % zum Entwurf
+plot(20*log10(abs(fft(h_c, N))))
 
 % Anwendung im Frequenzbereich
 S10_fft = fft(S7, N) .* fft(h_c, N);
@@ -102,35 +102,60 @@ S10 = ifft(S10_fft);
 
 
 %% Plotten der Signalspekren
-subplot(5,1,1);
+subplot(6,1,1);
 stem(0:N/2,einseitiges_spektrum(S4,N))
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S4(t)')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
 
-subplot(5,1,2);
+subplot(6,1,2);
 stem(0:N/2,einseitiges_spektrum(S7,N))
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S7(t)')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
 
-subplot(5,1,3);
+subplot(6,1,3);
 stem(0:N/2,einseitiges_spektrum(S8,N))
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S8(t)')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
 
-subplot(5,1,4);
+subplot(6,1,3);
+stem(0:N/2,einseitiges_spektrum(S4,N))
+xlim([0 N/2]);
+title('Vergleich der Spektren von S4, S7 und S8')
+hold on
+stem(0:N/2,einseitiges_spektrum(S7,N))
+stem(0:N/2,einseitiges_spektrum(S8,N))
+hold off
+xlabel('f (Hz)')
+ylabel('|P(f)|')
+legend('S4','S7', 'S8')
+
+subplot(6,1,4);
+plot(S4)
+xlim([0 250]);
+ylim([-1.5 1.5]);
+title('Vergleich der Signale von S4, S7 und S8')
+hold on
+plot(S7)
+plot(S8)
+hold off
+xlabel('n')
+ylabel('S[n]')
+legend('S4','S7', 'S8')
+
+subplot(6,1,5);
 stem(0:N/2,einseitiges_spektrum(S9,N))
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S9(t)')
 xlabel('f (Hz)')
 ylabel('|P(f)|')
 
-subplot(5,1,5);
+subplot(6,1,6);
 stem(0:N/2,einseitiges_spektrum(S10,N))
 xlim([0 N/2]);
 title('Einseitiges Spektrum von S10(t)')
