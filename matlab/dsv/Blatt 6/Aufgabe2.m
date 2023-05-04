@@ -1,16 +1,6 @@
-% Praktikum 8Matlab
+% Praktikum Matlab
 % Pascal Julian Bornkessel, FFI 6
 % Blatt 6, Aufgabe 2
-
-%%
-%%
-%%
-
-%% TODO - Filter normieren (Teilaufgabe 2d)
-
-%%
-%%
-%%
 
 %% Erzeugung des Signals S7
 Fs = 8192;               % Abtastfrequenz
@@ -80,31 +70,28 @@ w_c = 0.54 - (0.46 * cos((2*pi*(0:M_c))/M_c));
 h_500_1_c = tiefpass_koeffizienten(M_c, (500-(d/2)), Fs);
 h_500_2_c = tiefpass_koeffizienten(M_c, (500+(d/2)), Fs);
 h_500_c = (h_500_2_c - h_500_1_c) .* w_c;
+h_500_norm_c = real(ifft(fft(h_500_c)/max(fft(h_500_c))));
 
 % Bandpass für 1000 Hz
 h_1000_1_c = tiefpass_koeffizienten(M_c, (1000-(d/2)), Fs);
 h_1000_2_c = tiefpass_koeffizienten(M_c, (1000+(d/2)), Fs);
 h_1000_c = (h_1000_2_c - h_1000_1_c) .* w_c;
+h_1000_norm_c = real(ifft(fft(h_1000_c)/max(fft(h_1000_c))));
 
 % Bandpass für 1500 Hz
 h_1500_1_c = tiefpass_koeffizienten(M_c, (1500-(d/2)), Fs);
 h_1500_2_c = tiefpass_koeffizienten(M_c, (1500+(d/2)), Fs);
 h_1500_c = (h_1500_2_c - h_1500_1_c) .* w_c;
+h_1500_norm_c = real(ifft(fft(h_1500_c)/max(fft(h_1500_c))));
 
 % Parallelschaltung der Bandpassfilter
-h_c = h_500_c + h_1000_c + h_1500_c;
+h_c = h_500_norm_c + h_1000_norm_c + h_1500_norm_c;
 plot(20*log10(abs(fft(h_c, N))))
 
 % Anwendung im Frequenzbereich
 S10_fft = fft(S7, N) .* fft(h_c, N);
 S10 = ifft(S10_fft);
 
-[val, idx] = max(2*abs(S10_fft/N));
-mult = 1/val;
-
-h_c = mult*h_500_c + mult*h_1000_c + mult*h_1500_c;
-S10_fft = fft(S7, N) .* fft(h_c, N);
-S10 = ifft(S10_fft);
 
 
 %% Plotten der Signalspekren
