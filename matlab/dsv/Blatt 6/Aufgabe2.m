@@ -24,7 +24,7 @@ S7 = S4 + (5    * randn(1, N));
 
 
 %% Bearbeitung im Frequenzraum (Teilaufgabe A)
-limit_amplitude = 0.3;
+limit_amplitude = 0.4;
 
 S7_fft = fft(S7);
 S8_fft = zeros(1,numel(S7_fft));
@@ -99,6 +99,12 @@ plot(20*log10(abs(fft(h_c, N))))
 S10_fft = fft(S7, N) .* fft(h_c, N);
 S10 = ifft(S10_fft);
 
+[val, idx] = max(2*abs(S10_fft/N));
+mult = 1/val;
+
+h_c = mult*h_500_c + mult*h_1000_c + mult*h_1500_c;
+S10_fft = fft(S7, N) .* fft(h_c, N);
+S10 = ifft(S10_fft);
 
 
 %% Plotten der Signalspekren

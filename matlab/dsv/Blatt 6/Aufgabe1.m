@@ -23,7 +23,7 @@ w = 0.54 - (0.46 * cos((2*pi*(0:M))/M));
 firfilter = h .* w;
 
 %% Faltung mit firfilter
-S7_filtered = conv(S7, firfilter);
+S7_filtered = conv(S7, firfilter, "same");
 
 %% Diskrete Fourier-Transformation
 S7_fft = fft(S7);
