@@ -21,4 +21,5 @@
 
 ### 6. Semester
 * Praktikum zur Vorlesung **Digitale Signalverarbeitung**
+* Praktikum zur Vorlesung **Regelungstechnik**
 * Übungen zur Vorlesung **Grundlagen von Python**
